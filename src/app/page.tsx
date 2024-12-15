@@ -1,15 +1,12 @@
-import { db } from "@/db/drizzle"
-import { usersTable } from "@/db/schema"
+import { ThemeSwitch } from "@/components/theme-switch";
 
 export default async function Page(){
-  // console.log("server side run");
-  const query = await db.select().from(usersTable).all();
-  console.log(query);
    
 
   return(
-    <main className="min-h-screen bg-neutral-900 text-white">
+    <main className="min-h-screen">
       page
+      <ThemeSwitch/>
     </main>
   )
 }
