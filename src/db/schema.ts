@@ -5,6 +5,7 @@ import { sqliteTable, integer, text } from 'drizzle-orm/sqlite-core';
  * Users table for authentication and profile management
  * Consolidates user authentication and profile information
  */
+
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   username: text('username').notNull().unique(),
@@ -27,8 +28,8 @@ export const users = sqliteTable('users', {
   forgotPasswordTokenExpiry: integer('forgot_password_token_expiry'),
 
   // Timestamps
-  createdAt: integer('created_at').$default(() => Date.now()),
-  updatedAt: integer('updated_at').$default(() => Date.now())
+  createdAt: text('created_at').$default(() => new Date().toISOString()),
+  updatedAt: text('updated_at').$default(() => new Date().toISOString())
 });
 
 /**
@@ -58,11 +59,11 @@ export const projects = sqliteTable('projects', {
 
   // Engagement metrics
   views: integer('views').default(0),
-  likes: integer('likes'),
+  // likesCount: integer('likes_count'),
 
   // Timestamps
-  createdAt: integer('created_at').$default(() => Date.now()),
-  updatedAt: integer('updated_at').$default(() => Date.now())
+  createdAt: text('created_at').$default(() => new Date().toISOString()),
+  updatedAt: text('updated_at')
 });
 
 /**
@@ -78,16 +79,16 @@ export const comments = sqliteTable('comments', {
 
 export const likes = sqliteTable('likes', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  userId: text('user_id').references(() => users.id),
+  userId: text('user_id').references(() => users.userId),
   projectId: integer('project_id').references(() => projects.id)
 });
 
 /**
  * Technology and Platform tracking (optional, can be managed via JSON in projects table)
  */
-export const technologies = sqliteTable('technologies', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  name: text('name').notNull().unique(),
-  category: text('category'), // Frontend, Backend, Database, etc.
-  icon: text('icon')
-});
+// export const technologies = sqliteTable('technologies', {
+//   id: integer('id').primaryKey({ autoIncrement: true }),
+//   name: text('name').notNull().unique(),
+//   category: text('category'), // Frontend, Backend, Database, etc.
+//   icon: text('icon')
+// });

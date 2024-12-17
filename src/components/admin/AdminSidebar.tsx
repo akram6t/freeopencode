@@ -1,3 +1,4 @@
+import { ThemeSwitch } from "@/components/theme-switch";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { Box, Cpu, LayoutDashboard, Monitor, Users } from "lucide-react";
 
@@ -18,23 +19,13 @@ export function AdminSidebar() {
             title: 'Projects',
             url: '/projects',
             icon: Box
-        },
-        {
-            title: 'Technologies', // react, node, laravel
-            url: '/technologies',
-            icon: Monitor
-        },
-        {
-            title: 'Category', // frontend, backend, api, database, etc
-            url: '/categories',
-            icon: Cpu
         }
     ]
 
     return (
         <Sidebar>
             <SidebarHeader>
-                <h2 className="text-lg font-bold">Admin Panel</h2>
+                <h2 className="text-lg font-bold">Admin Panel <ThemeSwitch/></h2>
             </SidebarHeader>
             <SidebarContent>
                 {/* Dashboard Section */}
