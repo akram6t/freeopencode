@@ -1,5 +1,4 @@
 'use client'
-
 import React, { useState, FormEvent } from 'react';
 import { Eye, EyeOff, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -38,53 +37,53 @@ function CreateNewPasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <Label htmlFor="newPassword" className="text-neutral-700 dark:text-neutral-300">New Password</Label>
+        <Label htmlFor="newPassword">New Password</Label>
         <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500" size={20} />
-          <Input 
-            id="newPassword" 
-            type={showPassword ? "text" : "password"} 
-            placeholder="Create a new password" 
-            className="pl-10 pr-10 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100"
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2" size={20} />
+          <Input
+            id="newPassword"
+            type={showPassword ? "text" : "password"}
+            placeholder="Create a new password"
+            className="pl-10 pr-10"
             value={formData.newPassword}
             onChange={handleInputChange}
-            required 
+            required
           />
-          <button 
+          <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500 focus:outline-none"
+            className="absolute right-3 top-1/2 -translate-y-1/2 focus:outline-none"
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         </div>
       </div>
       <div>
-        <Label htmlFor="confirmNewPassword" className="text-neutral-700 dark:text-neutral-300">Confirm New Password</Label>
+        <Label htmlFor="confirmNewPassword">Confirm New Password</Label>
         <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500" size={20} />
-          <Input 
-            id="confirmNewPassword" 
-            type={showConfirmPassword ? "text" : "password"} 
-            placeholder="Confirm your new password" 
-            className="pl-10 pr-10 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100"
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2" size={20} />
+          <Input
+            id="confirmNewPassword"
+            type={showConfirmPassword ? "text" : "password"}
+            placeholder="Confirm your new password"
+            className="pl-10 pr-10"
             value={formData.confirmNewPassword}
             onChange={handleInputChange}
-            required 
+            required
           />
-          <button 
+          <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500 focus:outline-none"
+            className="absolute right-3 top-1/2 -translate-y-1/2 focus:outline-none"
           >
             {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         </div>
       </div>
-      <Button type="submit" className="w-full bg-neutral-800 hover:bg-neutral-700 text-white dark:bg-neutral-200 dark:hover:bg-neutral-300 dark:text-neutral-800">Reset Password</Button>
+      <Button type="submit" className="w-full">Reset Password</Button>
       <div className="text-center">
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          <Link href="/login" className="text-neutral-800 dark:text-neutral-200 hover:underline">
+        <p className="text-sm">
+          <Link href="/login" className="hover:underline">
             Back to Login
           </Link>
         </p>
