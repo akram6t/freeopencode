@@ -1,17 +1,39 @@
+import { auth, signOut } from "@/auth";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { db } from "@/db/drizzle";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
-export default async function HomePage(){
+export default async function HomePage() {
+    const session = await auth();
 
-    const addData = async () => {
-        'use server';
-        
-    }
-    
-    return(
+    const handleSignOut = async () => {
+        'use server'
+        await signOut({
+            redirectTo: "/login"
+        })
+    };
+
+    return (
         <main>
-            <ThemeSwitch/>
-            <button onClick={addData}>add simple</button>
+            <ThemeSwitch />
+            {
+                session?.user ? (
+                    <div className="bg-white dark:bg-neutral-800 shadow-lg">
+                        <img className="w-16 h-16" src={session.user.image?.toString()}></img>
+                        <p>{session.user.id}</p>
+                        <p>{session.user.name}</p>
+                        <p>{session.user.email}</p>
+                        <button onClick={handleSignOut}>Signout</button>
+                    </div>
+                ) :
+                    (
+                        <Button asChild variant={'link'}>
+                            <Link href={'/login'}>
+                                Please Login
+                            </Link>
+                        </Button>
+                    )
+            }
         </main>
     )
 }

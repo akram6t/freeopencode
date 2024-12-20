@@ -1,4 +1,4 @@
-export function genUniqeId(length: number = 12): string {
+export function genUniqeId(length: number = 16): string {
     const characters =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let uniqueString = "";

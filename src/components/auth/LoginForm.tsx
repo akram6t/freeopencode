@@ -1,125 +1,135 @@
-'use client';
+"use client";
 
-import React, { useState, FormEvent } from 'react';
-import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import Link from 'next/link';
-import { signIn } from 'next-auth/react';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
+import { loginWithCredentials, loginWithGoogle } from "@/app/(auth)/auth-actions"; // Server actions for login
+import { useState } from "react";
 import { IconBrandGoogleFilled } from '@tabler/icons-react';
+import { z } from "zod";
+import { loginSchema } from "@/lib/zod"; // Assuming loginSchema is already defined
 
-interface LoginFormData {
-  email: string;
-  password: string;
-  rememberMe: boolean;
-}
+export function LoginForm({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"div">) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-function LoginForm() {
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [formData, setFormData] = useState<LoginFormData>({
-    email: '',
-    password: '',
-    rememberMe: false
-  });
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = await signIn('credentials', {
-      email: formData.email,
-      password: formData.password,
-      callbackUrl: '/dashboard'
-    });
-    // Handle the result (e.g., show error message if login failed)
+
+    try {
+      // Validate the form data using Zod schema
+      loginSchema.parse({ email, password });
+
+      // If validation passes, proceed with login
+      await loginWithCredentials({
+        email: email,
+        password: password
+      });
+
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setErrorMessage(error.errors[0].message); // Set the first validation error message
+      } else {
+        setErrorMessage("Something went wrong. Please try again.");
+      }
+    }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [id]: type === 'checkbox' ? checked : value
-    }));
+  const handleGoogleLogin = async () => {
+    await loginWithGoogle();
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <Label htmlFor="email">Email</Label>
-        <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2" size={20} />
-          <Input
-            id="email"
-            type="email"
-            placeholder="Enter your email"
-            className="pl-10"
-            value={formData.email}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <Card>
+        <CardHeader className="text-center">
+          <CardTitle className="text-xl">Welcome back</CardTitle>
+          <CardDescription>Login with your Google account</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} action={'#'}>
+            <div className="grid gap-6">
+              <div className="flex flex-col gap-4">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleGoogleLogin}
+                >
+                  <IconBrandGoogleFilled className="mr-2 h-5 w-5" />
+                  Login with Google
+                </Button>
+              </div>
+              <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+                <span className="relative z-10 bg-background px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+              <div className="grid gap-6">
+                <div className="grid gap-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="m@example.com"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <div className="flex items-center">
+                    <Label htmlFor="password">Password</Label>
+                    <a
+                      href="/forgot-password"
+                      className="ml-auto text-sm underline-offset-4 hover:underline"
+                    >
+                      Forgot your password?
+                    </a>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+                {errorMessage && (
+                  <div className="text-red-500 text-sm">{errorMessage}</div>
+                )}
+                <Button type="submit" className="w-full">
+                  Login
+                </Button>
+              </div>
+              <div className="text-center text-sm">
+                Don&apos;t have an account?{" "}
+                <a
+                  href="/signup"
+                  className="underline underline-offset-4 hover:text-primary"
+                >
+                  Sign up
+                </a>
+              </div>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+      <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary">
+        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
+        and <a href="#">Privacy Policy</a>.
       </div>
-      <div>
-        <Label htmlFor="password">Password</Label>
-        <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2" size={20} />
-          <Input
-            id="password"
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter your password"
-            className="pl-10 pr-10"
-            value={formData.password}
-            onChange={handleInputChange}
-            required
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 focus:outline-none"
-          >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
-        </div>
-      </div>
-      <div className="flex justify-between items-center">
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="rememberMe"
-            checked={formData.rememberMe}
-            onChange={handleInputChange}
-            className="mr-2 rounded"
-          />
-          <Label htmlFor="rememberMe" className="text-sm">Remember me</Label>
-        </div>
-        <Link href="/forgot-password" className="text-sm hover:underline">
-          Forgot Password?
-        </Link>
-      </div>
-      <Button type="submit" className="w-full">Sign In</Button>
-      {/* <Button 
-        type="button" 
-        className="w-full"
-        onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
-      >
-        <IconBrandGoogleFilled/> Sign in with Google
-      </Button> */}
-      <Button
-        type="button"
-        className="w-full bg-white text-neutral-800 border border-neutral-300 hover:bg-neutral-100 dark:bg-black dark:text-neutral-200 dark:border-neutral-700 dark:hover:bg-neutral-800"
-        // onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
-      >
-        <IconBrandGoogleFilled /> Sign in with Google
-      </Button>
-      <div className="text-center">
-        <p className="text-sm">
-          Don't have an account? {' '}
-          <Link href="/signup" className="hover:underline">
-            Sign Up
-          </Link>
-        </p>
-      </div>
-    </form>
+    </div>
   );
 }
-
-export default LoginForm;

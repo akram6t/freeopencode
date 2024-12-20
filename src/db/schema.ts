@@ -5,29 +5,20 @@ import { sqliteTable, integer, text } from 'drizzle-orm/sqlite-core';
  * Users table for authentication and profile management
  * Consolidates user authentication and profile information
  */
-
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  username: text('username').notNull().unique(),
-  userId: text('user_id').unique().notNull().$default(() => genUniqeId(12)),
+  userId: text('user_id').unique().$default(() => genUniqeId(12)),
+  fullName: text('full_name').notNull(),
   email: text('email').notNull().unique(),
+  profile: text('profile'),
   role: text('role').$type<"user" | "admin">().default('user'),
-
-  // Consolidated authentication methods
-  authProviders: text('auth_providers'), // JSON string to store multiple auth methods
-
-  // Profile information
-  profile: text('profile'), // JSON string to store flexible profile data
-
-  // Authentication and security fields
-  password: text('password'), // Hashed password
+  googleId: text('google_id'), // Changed from googleId to google_id to match snake_case
+  isVerified: integer('is_verified').default(0),
+  password: text('password'),
   verifyToken: text('verify_token'),
-  verifyTokenExpiry: integer('verify_token_expiry'),
-  isVerified: integer('is_verified').notNull().default(0),
+  verifyTokenExpiry: text('verify_token_expiry'),
   forgotPasswordToken: text('forgot_password_token'),
-  forgotPasswordTokenExpiry: integer('forgot_password_token_expiry'),
-
-  // Timestamps
+  forgotPasswordTokenExpiry: text('forgot_password_token_expiry'),
   createdAt: text('created_at').$default(() => new Date().toISOString()),
   updatedAt: text('updated_at').$default(() => new Date().toISOString())
 });
@@ -41,7 +32,7 @@ export const projects = sqliteTable('projects', {
   title: text('title').notNull(),
   description: text('description').notNull(),
 
-  // Author information (embedded instead of separate table)
+  // Author information (embedded instead of separate table)  
   authorName: text('author_name').notNull(),
   authorEmail: text('author_email'),
   authorBio: text('author_bio'),
@@ -63,7 +54,7 @@ export const projects = sqliteTable('projects', {
 
   // Timestamps
   createdAt: text('created_at').$default(() => new Date().toISOString()),
-  updatedAt: text('updated_at')
+  updatedAt: text('updated_at').$default(() => new Date().toISOString())
 });
 
 /**
