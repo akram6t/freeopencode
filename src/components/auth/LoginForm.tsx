@@ -16,11 +16,13 @@ import { useState } from "react";
 import { IconBrandGoogleFilled } from '@tabler/icons-react';
 import { z } from "zod";
 import { loginSchema } from "@/lib/zod"; // Assuming loginSchema is already defined
+import { Loader2 } from "lucide-react";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const [loading, setLoading] = useState<boolean>(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -29,6 +31,8 @@ export function LoginForm({
     e.preventDefault();
 
     try {
+      setLoading(true);
+      setErrorMessage(null);
       // Validate the form data using Zod schema
       loginSchema.parse({ email, password });
 
@@ -44,6 +48,8 @@ export function LoginForm({
       } else {
         setErrorMessage("Something went wrong. Please try again.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,76 +62,70 @@ export function LoginForm({
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>Login with your Google account</CardDescription>
+          <CardDescription>Login with your email and password</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} action={'#'}>
             <div className="grid gap-6">
-              <div className="flex flex-col gap-4">
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={handleGoogleLogin}
-                >
-                  <IconBrandGoogleFilled className="mr-2 h-5 w-5" />
-                  Login with Google
-                </Button>
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  disabled={loading}
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
-              <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-                <span className="relative z-10 bg-background px-2 text-muted-foreground">
-                  Or continue with
-                </span>
-              </div>
-              <div className="grid gap-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
+              <div className="grid gap-2">
+                <div className="flex items-center">
+                  <Label htmlFor="password">Password</Label>
+                  <a
+                    href="/forgot-password"
+                    className="ml-auto text-sm underline-offset-4 hover:underline"
+                  >
+                    Forgot your password?
+                  </a>
                 </div>
-                <div className="grid gap-2">
-                  <div className="flex items-center">
-                    <Label htmlFor="password">Password</Label>
-                    <a
-                      href="/forgot-password"
-                      className="ml-auto text-sm underline-offset-4 hover:underline"
-                    >
-                      Forgot your password?
-                    </a>
-                  </div>
-                  <Input
-                    id="password"
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-                {errorMessage && (
-                  <div className="text-red-500 text-sm">{errorMessage}</div>
-                )}
-                <Button type="submit" className="w-full">
-                  Login
-                </Button>
+                <Input
+                  disabled={loading}
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </div>
-              <div className="text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <a
-                  href="/signup"
-                  className="underline underline-offset-4 hover:text-primary"
-                >
-                  Sign up
-                </a>
-              </div>
+              {errorMessage && (
+                <div className="text-red-500 text-sm">{errorMessage}</div>
+              )}
+              <Button disabled={loading} type="submit" className="w-full">
+                { loading && <Loader2 className="animate-spin"/> }
+                Login
+              </Button>
+            </div>
+            <div className="text-center text-sm">
+              Don&apos;t have an account?{" "}
+              <a
+                href="/signup"
+                className="underline underline-offset-4 hover:text-primary"
+              >
+                Sign up
+              </a>
             </div>
           </form>
         </CardContent>
       </Card>
+      <Button
+        variant="outline"
+        className="w-full"
+        onClick={handleGoogleLogin}
+      >
+        <IconBrandGoogleFilled className="mr-2 h-5 w-5" />
+        Login with Google
+      </Button>
       <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary">
         By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
         and <a href="#">Privacy Policy</a>.

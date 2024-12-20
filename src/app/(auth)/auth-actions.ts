@@ -7,8 +7,9 @@ import bcryptjs from 'bcryptjs';
 import * as schema from '@/db/schema';
 import { genUniqeId } from "@/lib/helpers";
 import { eq } from "drizzle-orm";
+import { sendVerificationEmail } from "@/lib/resend";
 
-export async function signupWithCredentials(data: { fullName: String, email: string; password: string }) {
+export async function signupWithCredentials(data: { fullName: string, email: string; password: string }) {
   // Implement signup logic  
   try {
 
@@ -25,16 +26,19 @@ export async function signupWithCredentials(data: { fullName: String, email: str
 
     const hashedPassword = await bcryptjs.hash(data.password, 10);
     const generateVerifyToken = genUniqeId(12);
-    const accessVerifyTokenExpiry = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 hour
+    const setVerifyTokenExpiry = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 hour
 
     const newUser = await db.insert(schema.users).values({
       fullName: data.fullName.toString(),
       email: data.email.trim().toLowerCase(),
       password: hashedPassword,
       verifyToken: generateVerifyToken,
-      verifyTokenExpiry: accessVerifyTokenExpiry,
+      verifyTokenExpiry: setVerifyTokenExpiry,
       role: defaultRole
     }).returning();
+
+    const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL}/verify?token=${generateVerifyToken}`;
+    await sendVerificationEmail(data.fullName, data.email.trim(), verificationLink);
 
     return { success: true, data: newUser };
 
@@ -61,11 +65,23 @@ export async function forgotPassword(data: { email: string }) {
 }
 
 export async function loginWithCredentials(data: { email: string; password: string }) {
-  // Implement email/password login logic here
-  await signIn('credentials', {
-    email: data.email.trim().toLowerCase(),
-    password: data.password.trim()
-  })
+  console.log(data);
+
+  try {
+    const response = await signIn('credentials', {
+      email: data.email.trim().toLowerCase(),
+      password: data.password.trim(),
+      redirect: false // Important: prevent automatic redirect
+    });
+
+    if (!response?.ok) {
+      return { error: response?.error };
+    }
+
+    return { success: true };
+  } catch (error) {
+    return { error: "An unexpected error occurred" };
+  }
 }
 
 export async function loginWithGoogle() {

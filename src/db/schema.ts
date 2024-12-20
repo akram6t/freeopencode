@@ -7,7 +7,7 @@ import { sqliteTable, integer, text } from 'drizzle-orm/sqlite-core';
  */
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  userId: text('user_id').unique().$default(() => genUniqeId(12)),
+  userId: text('user_id').unique().$default(() => genUniqeId(16)),
   fullName: text('full_name').notNull(),
   email: text('email').notNull().unique(),
   profile: text('profile'),

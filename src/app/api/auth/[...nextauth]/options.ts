@@ -29,7 +29,7 @@ export const authOptions: NextAuthConfig = {
             async authorize(credentials): Promise<User | null> {
                 try {
                     if (!credentials?.email || !credentials?.password) {
-                        throw new Error('Please provide both email and password');
+                        throw new Error('Email and password are required');
                     }
 
                     const existingUser = await db.query.users.findFirst({
@@ -37,13 +37,13 @@ export const authOptions: NextAuthConfig = {
                     });
 
                     if (!existingUser || !existingUser.password) {
-                        return null;
+                        throw new Error('Account not found. Please sign up first');
                     }
 
                     const passwordMatch = bcrypt.compare(credentials?.password?.toString(), existingUser.password);
 
                     if (!passwordMatch) {
-                        return null;
+                        throw new Error('Incorrect password');
                     }
 
                     return {
@@ -58,7 +58,7 @@ export const authOptions: NextAuthConfig = {
                     };
                 } catch (error) {
                     console.error('Auth error:', error);
-                    return null;
+                    throw new Error('Internal auth error.');
                 }
             }
         })
@@ -85,6 +85,9 @@ export const authOptions: NextAuthConfig = {
                         where: eq(schema.users.email, profile?.email!)
                     });
 
+                    // set role 'admin' when anyone signup with admin email
+                    const defaultRole = process.env.ADMIN_EMAIL! as string !== profile.email ? 'user' : 'admin';
+
                     if (!existingUser) {
                         await db.insert(schema.users).values({
                             googleId: profile.sub,
@@ -92,7 +95,7 @@ export const authOptions: NextAuthConfig = {
                             fullName: profile.name!,
                             isVerified: 1,
                             profile: profile.picture || '',
-                            role: 'user'
+                            role: defaultRole
                         });
                         return true;
                     }
