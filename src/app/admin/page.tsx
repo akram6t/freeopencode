@@ -1,7 +1,11 @@
-export default function DashboardPage(){
+import { AdminPageWrapper } from "@/components/admin/AdminPageWrapper";
+
+export default function DashboardPage() {
     return (
-        <main>
-            dashboard
-        </main>
+        <AdminPageWrapper
+            navTitle="Dashboard"
+            breadcrumpItems={[{ name: "Dashboard" }]}>
+            <h1>hello dashboard</h1>
+        </AdminPageWrapper>
     )
 }

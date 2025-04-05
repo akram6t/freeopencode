@@ -1,9 +1,9 @@
 import { genUniqeId } from '@/lib/helpers';
-import { sqliteTable, integer, text } from 'drizzle-orm/sqlite-core';
+import { sql } from 'drizzle-orm';
+import { sqliteTable, integer, text, uniqueIndex, index } from 'drizzle-orm/sqlite-core';
 
 /**
- * Users table for authentication and profile management
- * Consolidates user authentication and profile information
+ * Users table - Authentication and profile management
  */
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
@@ -11,54 +11,68 @@ export const users = sqliteTable('users', {
   fullName: text('full_name').notNull(),
   email: text('email').notNull().unique(),
   profile: text('profile'),
-  role: text('role').$type<"user" | "admin">().default('user'),
-  googleId: text('google_id'), // Changed from googleId to google_id to match snake_case
-  isVerified: integer('is_verified').default(0),
+  role: text('role', { enum: ['user', 'admin'] }).default('user'),
+  googleId: text('google_id'),
+  isVerified: integer('is_verified', { mode: 'boolean' }).default(false),
   password: text('password'),
   verifyToken: text('verify_token'),
   verifyTokenExpiry: text('verify_token_expiry'),
   forgotPasswordToken: text('forgot_password_token'),
   forgotPasswordTokenExpiry: text('forgot_password_token_expiry'),
-  createdAt: text('created_at').$default(() => new Date().toISOString()),
-  updatedAt: text('updated_at').$default(() => new Date().toISOString())
-});
+  createdAt: text('created_at').$default(() => sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updated_at').$default(() => sql`CURRENT_TIMESTAMP`)
+},
+  (users) => ({
+    uniqueEmail: uniqueIndex('users_email_idx').on(users.email),
+    uniqueUserId: uniqueIndex('users_user_id_idx').on(users.userId)
+  }));
 
 /**
  * Projects table - Core entity for project showcase
- * Combines author and project details
  */
 export const projects = sqliteTable('projects', {
   id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').references(() => users.id).notNull(),
   title: text('title').notNull(),
-  description: text('description').notNull(),
-
-  // Author information (embedded instead of separate table)  
-  authorName: text('author_name').notNull(),
-  authorEmail: text('author_email'),
-  authorBio: text('author_bio'),
-  authorWebsite: text('author_website'), // JSON string for social links
-
-  // Project details
-  sourceUrl: text('source_url').notNull(),
+  description: text('description'),
+  metadata: text('metadata'),
+  status: text('status', { enum: ['draft', 'published'] }).default('draft'),
+  sourceUrl: text('source_url'),
   demoUrl: text('demo_url'),
   thumbnail: text('thumbnail'),
-  screenshorts: text('screenshots'), // JSON string for screenshots images
-
-  // Technology and tags (using JSON for flexibility)
-  technologies: text('technologies'), // JSON array of technology names
-  tags: text('tags'), // JSON array of tags
-
-  // Engagement metrics
+  screenshots: text('screenshots', { mode: 'json' }), // JSON string
+  platforms: text('platforms', { mode: 'json' }), // JSON string
+  languages: text('languages', { mode: 'json' }), // JSON string
+  technologyTypes: text('technology_types', { mode: 'json' }), // JSON string ex. frontend, backend
+  technologies: text('technologies', { mode: 'json' }), // JSON string
+  tags: text('tags', { mode: 'json' }), // JSON string
+  complexity: text('complexity', { enum: ['beginner', 'intermediate', 'advanced'] }).default('beginner'),
   views: integer('views').default(0),
-  // likesCount: integer('likes_count'),
-
-  // Timestamps
-  createdAt: text('created_at').$default(() => new Date().toISOString()),
-  updatedAt: text('updated_at').$default(() => new Date().toISOString())
-});
+  createdAt: text('created_at').$default(() => sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updated_at').$default(() => sql`CURRENT_TIMESTAMP`)
+},
+  (projects) => ({
+    userIndex: index('projects_user_id_idx').on(projects.userId),
+    viewsIndex: index('projects_views_idx').on(projects.views),
+    titleSearchIndex: index('projects_title_idx').on(projects.title)
+  }));
 
 /**
- * Comments table - Simplified interaction tracking
+ * Likes table - Many-to-many relationship between users and projects
+ */
+export const likes = sqliteTable('likes', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').references(() => users.id).notNull(),
+  projectId: integer('project_id').references(() => projects.id).notNull(),
+  createdAt: text('created_at').$default(() => sql`CURRENT_TIMESTAMP`)
+},
+  (likes) => ({
+    userProjectIndex: uniqueIndex('likes_user_project_idx').on(likes.userId, likes.projectId),
+    projectIndex: index('likes_project_id_idx').on(likes.projectId)
+  }));
+
+/**
+ * Comments table - Interaction tracking
  */
 export const comments = sqliteTable('comments', {
   id: integer('id').primaryKey({ autoIncrement: true }),
@@ -66,20 +80,8 @@ export const comments = sqliteTable('comments', {
   userId: integer('user_id').references(() => users.id).notNull(),
   content: text('content').notNull(),
   createdAt: integer('created_at').$default(() => Date.now())
-});
-
-export const likes = sqliteTable('likes', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  userId: text('user_id').references(() => users.userId),
-  projectId: integer('project_id').references(() => projects.id)
-});
-
-/**
- * Technology and Platform tracking (optional, can be managed via JSON in projects table)
- */
-// export const technologies = sqliteTable('technologies', {
-//   id: integer('id').primaryKey({ autoIncrement: true }),
-//   name: text('name').notNull().unique(),
-//   category: text('category'), // Frontend, Backend, Database, etc.
-//   icon: text('icon')
-// });
+},
+  (comments) => ({
+    projectIndex: index('comments_project_id_idx').on(comments.projectId),
+    userIndex: index('comments_user_id_idx').on(comments.userId)
+  }));

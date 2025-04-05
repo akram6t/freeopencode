@@ -21,8 +21,11 @@ export default async function HomePage() {
                     <div className="bg-white dark:bg-neutral-800 shadow-lg">
                         <img className="w-16 h-16" src={session.user.image?.toString()}></img>
                         <p>{session.user.id}</p>
+                        <p>{session.user.userId}</p>
                         <p>{session.user.name}</p>
                         <p>{session.user.email}</p>
+                        <p>{session.user.isVerified!.toString()}</p>
+                        <p>{session.user.role?.toString()}</p>
                         <button onClick={handleSignOut}>Signout</button>
                     </div>
                 ) :

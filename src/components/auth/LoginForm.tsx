@@ -17,6 +17,7 @@ import { IconBrandGoogleFilled } from '@tabler/icons-react';
 import { z } from "zod";
 import { loginSchema } from "@/lib/zod"; // Assuming loginSchema is already defined
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export function LoginForm({
   className,
@@ -26,32 +27,58 @@ export function LoginForm({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const {toast} = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       setLoading(true);
       setErrorMessage(null);
+
       // Validate the form data using Zod schema
       loginSchema.parse({ email, password });
 
       // If validation passes, proceed with login
-      await loginWithCredentials({
+      const result = await loginWithCredentials({
         email: email,
         password: password
       });
 
+      if (!result.success && result.error) {
+        // Show error message in toast
+        toast({
+          variant: 'destructive',
+          description: result.error
+        });
+        setErrorMessage(result.error);
+      } else {
+        // Show success message and handle successful login
+        toast({
+          description: "successfully logged in"
+        });
+        // Add your redirect logic here if needed
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
-        setErrorMessage(error.errors[0].message); // Set the first validation error message
+        const errorMessage = error.errors[0].message;
+        toast({
+          variant: 'destructive',
+          description: errorMessage
+        });
+        setErrorMessage(errorMessage);
       } else {
-        setErrorMessage("Something went wrong. Please try again.");
+        const errorMessage = "Something went wrong. Please try again.";
+        toast({
+          variant: 'destructive',
+          description: errorMessage
+        });
+        setErrorMessage(errorMessage);
       }
     } finally {
       setLoading(false);
     }
   };
+
 
   const handleGoogleLogin = async () => {
     await loginWithGoogle();
@@ -102,7 +129,7 @@ export function LoginForm({
                 <div className="text-red-500 text-sm">{errorMessage}</div>
               )}
               <Button disabled={loading} type="submit" className="w-full">
-                { loading && <Loader2 className="animate-spin"/> }
+                {loading && <Loader2 className="animate-spin" />}
                 Login
               </Button>
             </div>

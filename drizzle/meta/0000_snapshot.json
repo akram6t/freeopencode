@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "2bfc4b49-0ced-4a03-9cb6-0d2a9a61b263",
+  "id": "1f46c687-d336-4554-93bb-79cff315eee8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "comments": {
@@ -43,7 +43,22 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "comments_project_id_idx": {
+          "name": "comments_project_id_idx",
+          "columns": [
+            "project_id"
+          ],
+          "isUnique": false
+        },
+        "comments_user_id_idx": {
+          "name": "comments_user_id_idx",
+          "columns": [
+            "user_id"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "comments_project_id_projects_id_fk": {
           "name": "comments_project_id_projects_id_fk",
@@ -88,20 +103,43 @@
         },
         "user_id": {
           "name": "user_id",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "project_id": {
           "name": "project_id",
           "type": "integer",
           "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "likes_user_project_idx": {
+          "name": "likes_user_project_idx",
+          "columns": [
+            "user_id",
+            "project_id"
+          ],
+          "isUnique": true
+        },
+        "likes_project_id_idx": {
+          "name": "likes_project_id_idx",
+          "columns": [
+            "project_id"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "likes_user_id_users_id_fk": {
           "name": "likes_user_id_users_id_fk",
@@ -144,6 +182,13 @@
           "notNull": true,
           "autoincrement": true
         },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "title": {
           "name": "title",
           "type": "text",
@@ -155,42 +200,22 @@
           "name": "description",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "author_name": {
-          "name": "author_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "author_email": {
-          "name": "author_email",
-          "type": "text",
-          "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "author_bio": {
-          "name": "author_bio",
+        "status": {
+          "name": "status",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
-        },
-        "author_website": {
-          "name": "author_website",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "'draft'"
         },
         "source_url": {
           "name": "source_url",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "demo_url": {
@@ -214,6 +239,27 @@
           "notNull": false,
           "autoincrement": false
         },
+        "platforms": {
+          "name": "platforms",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "languages": {
+          "name": "languages",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "technology_types": {
+          "name": "technology_types",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "technologies": {
           "name": "technologies",
           "type": "text",
@@ -228,6 +274,14 @@
           "notNull": false,
           "autoincrement": false
         },
+        "complexity": {
+          "name": "complexity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'beginner'"
+        },
         "views": {
           "name": "views",
           "type": "integer",
@@ -236,99 +290,15 @@
           "autoincrement": false,
           "default": 0
         },
-        "likes": {
-          "name": "likes",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "simple": {
-      "name": "simple",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "simple_email_unique": {
-          "name": "simple_email_unique",
-          "columns": [
-            "email"
-          ],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "technologies": {
-      "name": "technologies",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "category": {
-          "name": "category",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "icon": {
-          "name": "icon",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -336,15 +306,43 @@
         }
       },
       "indexes": {
-        "technologies_name_unique": {
-          "name": "technologies_name_unique",
+        "projects_user_id_idx": {
+          "name": "projects_user_id_idx",
           "columns": [
-            "name"
+            "user_id"
           ],
-          "isUnique": true
+          "isUnique": false
+        },
+        "projects_views_idx": {
+          "name": "projects_views_idx",
+          "columns": [
+            "views"
+          ],
+          "isUnique": false
+        },
+        "projects_title_idx": {
+          "name": "projects_title_idx",
+          "columns": [
+            "title"
+          ],
+          "isUnique": false
         }
       },
-      "foreignKeys": {},
+      "foreignKeys": {
+        "projects_user_id_users_id_fk": {
+          "name": "projects_user_id_users_id_fk",
+          "tableFrom": "projects",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
@@ -359,15 +357,15 @@
           "notNull": true,
           "autoincrement": true
         },
-        "username": {
-          "name": "username",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "user_id": {
           "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "full_name": {
+          "name": "full_name",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -380,6 +378,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "profile": {
+          "name": "profile",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "role": {
           "name": "role",
           "type": "text",
@@ -388,19 +393,20 @@
           "autoincrement": false,
           "default": "'user'"
         },
-        "auth_providers": {
-          "name": "auth_providers",
+        "google_id": {
+          "name": "google_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "profile": {
-          "name": "profile",
-          "type": "text",
+        "is_verified": {
+          "name": "is_verified",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": false
         },
         "password": {
           "name": "password",
@@ -418,18 +424,10 @@
         },
         "verify_token_expiry": {
           "name": "verify_token_expiry",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
-        },
-        "is_verified": {
-          "name": "is_verified",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 0
         },
         "forgot_password_token": {
           "name": "forgot_password_token",
@@ -440,34 +438,27 @@
         },
         "forgot_password_token_expiry": {
           "name": "forgot_password_token_expiry",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         }
       },
       "indexes": {
-        "users_username_unique": {
-          "name": "users_username_unique",
-          "columns": [
-            "username"
-          ],
-          "isUnique": true
-        },
         "users_user_id_unique": {
           "name": "users_user_id_unique",
           "columns": [
@@ -479,6 +470,20 @@
           "name": "users_email_unique",
           "columns": [
             "email"
+          ],
+          "isUnique": true
+        },
+        "users_email_idx": {
+          "name": "users_email_idx",
+          "columns": [
+            "email"
+          ],
+          "isUnique": true
+        },
+        "users_user_id_idx": {
+          "name": "users_user_id_idx",
+          "columns": [
+            "user_id"
           ],
           "isUnique": true
         }

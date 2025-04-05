@@ -26,7 +26,10 @@ export const authOptions: NextAuthConfig = {
                 email: { label: 'Email', type: 'email' },
                 password: { label: 'Password', type: 'password' }
             },
+
             async authorize(credentials): Promise<User | null> {
+                console.log(credentials);
+                
                 try {
                     if (!credentials?.email || !credentials?.password) {
                         throw new Error('Email and password are required');
@@ -40,7 +43,10 @@ export const authOptions: NextAuthConfig = {
                         throw new Error('Account not found. Please sign up first');
                     }
 
-                    const passwordMatch = bcrypt.compare(credentials?.password?.toString(), existingUser.password);
+                    const passwordMatch = await bcrypt.compare(
+                        credentials?.password.toString(),
+                        existingUser.password
+                    );
 
                     if (!passwordMatch) {
                         throw new Error('Incorrect password');
@@ -51,20 +57,23 @@ export const authOptions: NextAuthConfig = {
                         userId: existingUser.userId as string,
                         name: existingUser.fullName,
                         email: existingUser.email,
-                        profile: existingUser.profile || null,
+                        profile: existingUser.profile as string,
                         googleId: existingUser.googleId as string,
                         role: existingUser.role as string,
-                        isVerified: existingUser.isVerified === 1
+                        isVerified: existingUser.isVerified as boolean
                     };
                 } catch (error) {
-                    console.error('Auth error:', error);
-                    throw new Error('Internal auth error.');
+                    // Throw the actual error message so it can be displayed to the user
+                    throw new Error(error instanceof Error ? error.message : 'Internal auth error.');
                 }
             }
+
         })
     ],
     pages: {
-        signIn: '/login'
+        signIn: '/login',
+        newUser: '/signup',
+        error: '/auth/error'
     },
     session: {
         strategy: 'jwt'
@@ -93,7 +102,7 @@ export const authOptions: NextAuthConfig = {
                             googleId: profile.sub,
                             email: profile.email!,
                             fullName: profile.name!,
-                            isVerified: 1,
+                            isVerified: true,
                             profile: profile.picture || '',
                             role: defaultRole
                         });

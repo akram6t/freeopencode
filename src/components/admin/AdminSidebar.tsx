@@ -1,6 +1,6 @@
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import { Box, Cpu, LayoutDashboard, Monitor, Users } from "lucide-react";
+import { Box, LayoutDashboard, Users } from "lucide-react";
 
 export function AdminSidebar() {
 
@@ -12,12 +12,12 @@ export function AdminSidebar() {
         },
         {
             title: 'Users',
-            url: '/users',
+            url: '/admin/users',
             icon: Users
         },
         {
             title: 'Projects',
-            url: '/projects',
+            url: '/admin/projects',
             icon: Box
         }
     ]
@@ -30,7 +30,7 @@ export function AdminSidebar() {
             <SidebarContent>
                 {/* Dashboard Section */}
                 <SidebarGroup>
-                    <SidebarGroupLabel>Application</SidebarGroupLabel>
+                    {/* <SidebarGroupLabel>Application</SidebarGroupLabel> */}
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {items.map((item) => (
@@ -49,7 +49,7 @@ export function AdminSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <p className="text-sm text-gray-500">&copy; 2024 Admin Panel</p>
+                <p className="text-sm text-gray-500">&copy; 2024 Free Open Code</p>
             </SidebarFooter>
         </Sidebar>
     );

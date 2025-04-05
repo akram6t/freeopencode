@@ -1,107 +1,100 @@
-export type TechnologyType = {
-    id: Number,
-    name: String,
-    icon: String
-}
+export type Technology = {
+    id: number,
+    name: string,
+    icon: string
+};
 
-export const technologies: TechnologyType[] = [
+export const TECHNOLOGY_TYPES_DATA: Technology[] = [
     {
         id: 1,
-        name: 'JavaScript',
-        icon: 'javascript_icon'
+        name: 'Frontend',
+        icon: 'frontend_icon'
     },
     {
         id: 2,
-        name: 'Python',
-        icon: 'python_icon'
+        name: 'Backend',
+        icon: 'backend_icon'
     },
     {
         id: 3,
-        name: 'Java',
-        icon: 'java_icon'
+        name: 'Fullstack',
+        icon: 'fullstack_icon'
     },
     {
         id: 4,
-        name: 'C#',
-        icon: 'csharp_icon'
+        name: 'Mobile',
+        icon: 'mobile_icon'
     },
     {
         id: 5,
-        name: 'Ruby',
-        icon: 'ruby_icon'
+        name: 'Database',
+        icon: 'database_icon'
     },
     {
         id: 6,
-        name: 'Go',
-        icon: 'go_icon'
+        name: 'DevOps',
+        icon: 'devops_icon'
     },
     {
         id: 7,
-        name: 'PHP',
-        icon: 'php_icon'
+        name: 'Other',
+        icon: 'other_icon'
+    }
+]
+
+export const TECHNOLOGIES_DATA: Technology[] = [
+    {
+        id: 1,
+        name: 'Reactjs',
+        icon: 'react_js'
     },
     {
-        id: 8,
-        name: 'C++',
-        icon: 'cplusplus_icon'
-    },
-    {
-        id: 9,
-        name: 'TypeScript',
-        icon: 'typescript_icon'
-    },
-    {
-        id: 10,
-        name: 'React',
-        icon: 'react_icon'
-    },
-    {
-        id: 11,
+        id: 2,
         name: 'Vue.js',
         icon: 'vuejs_icon'
     },
     {
-        id: 12,
+        id: 3,
         name: 'Angular',
         icon: 'angular_icon'
     },
     {
-        id: 13,
+        id: 4,
         name: 'Node.js',
         icon: 'nodejs_icon'
     },
     {
-        id: 14,
+        id: 5,
         name: 'Docker',
         icon: 'docker_icon'
     },
     {
-        id: 15,
+        id: 6,
         name: 'Kubernetes',
         icon: 'kubernetes_icon'
     },
     {
-        id: 16,
+        id: 7,
         name: 'GraphQL',
         icon: 'graphql_icon'
     },
     {
-        id: 17,
+        id: 8,
         name: 'Swift',
         icon: 'swift_icon'
     },
     {
-        id: 18,
+        id: 9,
         name: 'Flutter',
         icon: 'flutter_icon'
     },
     {
-        id: 19,
+        id: 10,
         name: 'SQL',
         icon: 'sql_icon'
     },
     {
-        id: 20,
+        id: 11,
         name: 'NoSQL',
         icon: 'nosql_icon'
     }

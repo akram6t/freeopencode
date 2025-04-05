@@ -65,24 +65,26 @@ export async function forgotPassword(data: { email: string }) {
 }
 
 export async function loginWithCredentials(data: { email: string; password: string }) {
-  console.log(data);
-
   try {
     const response = await signIn('credentials', {
       email: data.email.trim().toLowerCase(),
       password: data.password.trim(),
-      redirect: false // Important: prevent automatic redirect
+      redirect: false,
+      callbackUrl: '/',
     });
 
-    if (!response?.ok) {
-      return { error: response?.error };
+    if (response?.error) {
+      // Return the error message from next-auth
+      return { success: false, error: response.error };
     }
 
     return { success: true };
   } catch (error) {
+    console.log('login with credentials: ', error);
     return { error: "An unexpected error occurred" };
   }
 }
+
 
 export async function loginWithGoogle() {
   // Implement Google login logic here
